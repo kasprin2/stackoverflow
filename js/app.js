@@ -32,7 +32,6 @@ var showQuestion = function(question) {
 };
 
 var showTopAnswerers = function(answerers) {
-	console.log(answerers);
 	var result = $('.templates .answerer').clone();
 
 	var pic = result.find('.profile-pic');
@@ -118,7 +117,6 @@ var getTopAnswerers = function(tags){
 		})
 
 		.done(function(result){ //this waits for the ajax to return with a succesful promise object
-			console.log(result, request);
 			var searchResults = showSearchResults(tags, result.items.length);
 
 			$('.search-results').html(searchResults);
@@ -144,6 +142,7 @@ $(document).ready( function() {
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
+		$(this).find("input[name='tags']").val("");
 	});
 
 	//Kates code
@@ -153,5 +152,6 @@ $(document).ready( function() {
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='answerers']").val();
 		getTopAnswerers(tags);
+		$(this).find("input[name='answerers']").val("");
 	});
 });
