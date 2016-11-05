@@ -31,6 +31,26 @@ var showQuestion = function(question) {
 	return result;
 };
 
+var showTopAnswerers = function(answerers) {
+	console.log(answerers);
+	var result = $('.templates .answerer').clone();
+
+	var pic = result.find('.profile-pic');
+	pic.attr('src', answerers.user.profile_image);
+
+	var ansElem = result.find('.answerer-text a');
+	ansElem.attr('href', answerers.user.link);
+	ansElem.text(answerers.user.display_name);
+
+	var score = result.find('.score');
+	score.text(answerers.score);
+
+	var rep = result.find('.reputation');
+	rep.text(answerers.user.reputation);
+
+	return result;
+}
+
 
 // this function takes the results object from StackOverflow
 // and returns the number of results and tags to be appended to DOM
@@ -64,6 +84,7 @@ var getUnanswered = function(tags) {
 		dataType: "jsonp",//use jsonp to avoid cross origin issues
 		type: "GET",
 	})
+
 	.done(function(result){ //this waits for the ajax to return with a succesful promise object
 		var searchResults = showSearchResults(request.tagged, result.items.length);
 
@@ -81,6 +102,39 @@ var getUnanswered = function(tags) {
 	});
 };
 
+// Kate's Code
+
+var getTopAnswerers = function(tags){
+		var url = "http://api.stackexchange.com//2.2/tags/" + tags + "/top-answerers/all_time";
+		var request = { 
+			site: 'stackoverflow',
+		};
+
+		$.ajax({
+			url: url,
+			data: request,
+			dataType: "jsonp",//use jsonp to avoid cross origin issues
+			type: "GET",
+		})
+
+		.done(function(result){ //this waits for the ajax to return with a succesful promise object
+			console.log(result, request);
+			var searchResults = showSearchResults(tags, result.items.length);
+
+			$('.search-results').html(searchResults);
+			//$.each is a higher order function. It takes an array and a function as an argument.
+			//The function is executed once for each item in the array.
+			$.each(result.items, function(i, item) {
+				var question = showTopAnswerers(item);
+				$('.results').append(question);
+			});
+		})
+		.fail(function(jqXHR, error){ //this waits for the ajax to return with an error promise object
+			var errorElem = showError(error);
+			$('.search-results').append(errorElem);
+		});
+}
+
 
 $(document).ready( function() {
 	$('.unanswered-getter').submit( function(e){
@@ -90,5 +144,14 @@ $(document).ready( function() {
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
+	});
+
+	//Kates code
+	$('.inspiration-getter').submit( function(e){
+		e.preventDefault();
+		$('.results').html('');
+		// get the value of the tags the user submitted
+		var tags = $(this).find("input[name='answerers']").val();
+		getTopAnswerers(tags);
 	});
 });

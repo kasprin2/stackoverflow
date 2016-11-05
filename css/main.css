@@ -45,3 +45,8 @@
 	background-color: #F78181;
 	padding: 1em;
 }
+
+.profile-pic {
+	float: right;
+	max-height: 75px;
+}
